@@ -40,5 +40,20 @@ namespace EmployeeManager.ApiClient.Controllers
             ViewBag.Countries = listOfCountries;
             return true;
         }
+
+        public async Task<IActionResult> ListAsync()
+        {
+            HttpResponseMessage response = await client.GetAsync(employeesApiUrl);
+            string stringData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Deserialize stringData ignoring case as a List of Employees
+            List<Employee> data = JsonSerializer.Deserialize<List<Employee>>(stringData,options);
+
+            return View(data);
+        }
     }
 }

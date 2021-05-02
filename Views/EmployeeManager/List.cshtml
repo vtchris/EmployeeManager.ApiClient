@@ -1,0 +1,36 @@
+﻿@model List<Employee>
+    
+    <h2>List of Employees</h2>
+    <h2>@TempData["Message"]</h2>
+
+    <a asp-controller="EmployeeManager" asp-action="Insert" class="btn btn-success">Insert</a>
+
+    <br />
+    <br />
+
+    <table class="table">
+        <tr class="thead-dark">
+            <th>Employee ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Title</th>
+            <th>Hire Date</th>
+            <th>Country</th>
+            <th colspan="2">Actions</th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.EmployeeID</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.Title</td>
+                <td>@item.HireDate</td>
+                <td>@item.Country</td>
+                <td><a asp-controller="EmployeeManager" asp-action="Update" asp-route-id="@item.EmployeeID" class="btn btn-warning">Update</a></td>
+                <!-- asp-action here refers to ActionName decorator on the controller -->
+                <td><a asp-controller="EmployeeManager" asp-action="Delete" asp-route-id="@item.EmployeeID" class="btn btn-danger">Delete</a></td>
+            </tr>
+        }
+    </table>
