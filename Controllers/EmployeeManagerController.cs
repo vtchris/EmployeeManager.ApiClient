@@ -55,5 +55,32 @@ namespace EmployeeManager.ApiClient.Controllers
 
             return View(data);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> InsertAsync()
+        {
+            await FillCountriesAsync();
+            return View();
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> InsertAsync(Employee model)
+        {
+            await FillCountriesAsync();
+            if (ModelState.IsValid)
+            {
+                string stringData = JsonSerializer.Serialize(model);
+                var contentData = new StringContent(stringData, System.Text.Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PostAsync(employeesApiUrl, contentData);
+                if (response.IsSuccessStatusCode)
+                    ViewBag.Message = "Employee inserted successfully";
+                else
+                    ViewBag.Message = "Error when calling API";
+            }
+
+            return View(model);
+        }
     }
 }
