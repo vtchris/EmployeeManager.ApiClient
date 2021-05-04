@@ -117,5 +117,35 @@ namespace EmployeeManager.ApiClient.Controllers
             return View(model);
 
         }
+
+        [HttpGet]
+        // Name action so you dont have to call it by the signature from the view
+        [ActionName("Delete")]
+        public async Task<IActionResult> ConfirmDeleteAsync(int id)
+        {
+            HttpResponseMessage response = await client.GetAsync($"{employeesApiUrl}/{id}");
+            string stringData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            Employee model = JsonSerializer.Deserialize<Employee>(stringData, options);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteAsync(int employeeId)
+        {
+            HttpResponseMessage response = await client.DeleteAsync($"{employeesApiUrl}/{employeeId}");
+            // We are returning to another Task so TempData is used instead of viewBag
+            if (response.IsSuccessStatusCode)
+                TempData["Message"] = "Employee deleted successfully";
+            else
+                TempData["Message"] = "Error while calling API";
+
+            return RedirectToAction("List");
+        }
     }
 }
