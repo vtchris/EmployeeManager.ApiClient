@@ -82,5 +82,40 @@ namespace EmployeeManager.ApiClient.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> UpdateAsync(int id)
+        {
+            await FillCountriesAsync();
+            HttpResponseMessage response = await client.GetAsync($"{employeesApiUrl}/{id}");
+            string stringData = await response.Content.ReadAsStringAsync();
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            Employee model = JsonSerializer.Deserialize<Employee>(stringData, options);
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAsync(Employee model)
+        {
+            await FillCountriesAsync();
+            if (ModelState.IsValid)
+            {
+                string stringData = JsonSerializer.Serialize(model);
+                var contentData = new StringContent(stringData, System.Text.Encoding.UTF8, "application/json");
+                HttpResponseMessage response = await client.PutAsync($"{employeesApiUrl}/{model.EmployeeID}", contentData);
+                if (response.IsSuccessStatusCode)
+                    ViewBag.Message = "Employee updated successfully";
+                else
+                    ViewBag.Message = "Error when calling API";
+            }
+
+            return View(model);
+
+        }
     }
 }
